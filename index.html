@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaibhav Binwal — RISC-V &amp; Systems Engineer</title>
+<meta name="description" content="Vaibhav Binwal — RISC-V open-source contributor (riscv-arch-test, OpenBLAS, Sargantana) and systems engineer: RDMA, eBPF/XDP, high-performance C++.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --bg:#F4F2EE; --bg2:#F9F8F6; --panel:#FFFFFF; --line:#E2DDD5; --line2:#D2CBC0;
+  --tx:#1C1B1A; --tx2:#57524C; --tx3:#8E877D;
+  --acc:#C85A32; --acc-d:#A8461F; --acc-l:#F3E1D8; --acc-ll:#FAF0EA;
+  --sage:#6E8A6B; --slate:#4F6C88; --ochre:#C79A3E;
+  --mono:'IBM Plex Mono',ui-monospace,monospace; --sans:'IBM Plex Sans',system-ui,sans-serif; --serif:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:16px;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--acc);color:#fff}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+code{font-family:var(--mono);font-size:.86em;background:var(--acc-ll);color:var(--acc-d);padding:1px 5px;border-radius:4px;border:1px solid var(--acc-l)}
+b,strong{font-weight:600;color:var(--tx)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(244,242,238,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:-.01em}
+.brand span{color:var(--acc)}
+.navlinks{display:flex;gap:24px;font-family:var(--mono);font-size:12.5px;color:var(--tx2);align-items:center}
+.navlinks a:hover,.navlinks a.on{color:var(--acc)}
+.navlinks .nbtn{background:var(--acc);color:#fff;padding:7px 13px;border-radius:6px}
+.navlinks .nbtn:hover{background:var(--acc-d);color:#fff}
+@media(max-width:800px){.navlinks a:not(.nbtn){display:none}}
+
+/* hero */
+.hero{padding:76px 0 64px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:center}
+@media(max-width:940px){.hero .wrap{grid-template-columns:1fr}}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--acc-d);border:1px solid var(--acc-l);background:var(--acc-ll);padding:5px 11px;border-radius:999px;margin-bottom:22px}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+h1{font-family:var(--serif);font-size:clamp(40px,5.4vw,62px);line-height:1.03;font-weight:600;letter-spacing:-.025em}
+h1 em{font-style:italic;color:var(--acc)}
+.lede{margin-top:24px;font-size:17.5px;line-height:1.75;color:var(--tx2);max-width:540px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{font-family:var(--mono);font-size:12.5px;padding:10px 16px;border-radius:6px;border:1px solid var(--line2);color:var(--tx);background:var(--bg2);transition:all .15s;display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.pri:hover{background:var(--acc-d);color:#fff}
+.stage{position:relative;height:460px;border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#FBFAF7 0%,#EFEBE4 75%);border:1px solid var(--line);overflow:hidden}
+.stage canvas{display:block}
+.stage .cap{position:absolute;left:16px;bottom:13px;font-family:var(--mono);font-size:11px;color:var(--tx3)}
+.stage .cap2{position:absolute;right:16px;top:13px;font-family:var(--mono);font-size:11px;color:var(--tx3)}
+.lbl3d{position:absolute;font-family:var(--mono);font-size:11px;pointer-events:none;white-space:nowrap;transform:translate(0,-50%)}
+.lbl3d b{display:block;font-family:var(--sans);font-size:12.5px;color:var(--tx)}
+.lbl3d span{color:var(--tx3)}
+.lbl3d::before{content:"";position:absolute;left:-26px;top:50%;width:20px;border-top:1px dashed var(--line2)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:12px;background:var(--bg2);overflow:hidden}
+.stat{padding:24px 24px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.stat b small{font-size:16px;color:var(--tx3);font-weight:500}
+.stat span{font-size:12.5px;color:var(--tx3);line-height:1.5;display:block;margin-top:8px}
+@media(max-width:860px){.stats{grid-template-columns:1fr 1fr}.stat{border-bottom:1px solid var(--line)}}
+
+/* sections */
+section{padding:112px 0 16px}
+.sh{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+.sh .n{font-family:var(--mono);font-size:12px;color:var(--acc)}
+h2{font-family:var(--serif);font-size:38px;font-weight:600;letter-spacing:-.02em}
+.sub{color:var(--tx2);max-width:680px;margin-bottom:40px;font-size:17px;line-height:1.7}
+
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:34px 36px}
+.card h3{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.meta{font-family:var(--mono);font-size:11.5px;color:var(--tx3);margin-top:8px}
+.meta a{color:var(--acc)} .meta a:hover{text-decoration:underline}
+.card p{color:var(--tx2);font-size:15.5px;line-height:1.78}
+.card p+p{margin-top:14px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.pill{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+.pill.m{color:#3F6B45;border-color:#C7D8C5;background:#EEF4EC}
+.pill.o{color:var(--acc-d);border-color:var(--acc-l);background:var(--acc-ll)}
+.pill.b{color:var(--slate);border-color:#CBD7E2;background:#EEF2F6}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.g-7-5{display:grid;grid-template-columns:7fr 5fr;gap:32px}
+@media(max-width:900px){.g2,.g3,.g-7-5{grid-template-columns:1fr}}
+.mt{margin-top:28px}
+
+/* bitfield */
+.bitfield{margin:26px 0 10px;user-select:none}
+.bf{display:flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden;font-family:var(--mono);background:var(--panel)}
+.bf div{border-right:1px solid var(--line2);padding:8px 4px 7px;text-align:center;transition:background .2s,color .2s}
+.bf div:last-child{border-right:0}
+.bf div b{display:block;font-size:12.5px;font-weight:600}
+.bf div span{font-size:10px;color:var(--tx3)}
+.bf div.hot{background:var(--acc);color:#fff}
+.bf div.hot b{color:#fff}.bf div.hot span{color:#F6D7C8}
+.bf div.warm{background:var(--acc-l)}
+.bfnote{font-family:var(--mono);font-size:11px;color:var(--tx3);margin-top:6px}
+
+.iss{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+@media(max-width:700px){.iss{grid-template-columns:1fr}}
+.is{border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:var(--panel);cursor:default;transition:border-color .15s,box-shadow .15s}
+.is:hover,.is.act{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-ll)}
+.is .h{font-family:var(--mono);font-size:12px;color:var(--tx);display:flex;gap:8px}
+.is .h i{font-style:normal;color:var(--acc)}
+.is p{font-size:13.5px;color:var(--tx2);margin-top:6px;line-height:1.65}
+
+.pr{border-left:3px solid var(--sage);background:var(--panel);border-radius:0 8px 8px 0;padding:14px 18px;margin-top:14px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pr .t{font-family:var(--mono);font-size:11.5px;color:#3F6B45;margin-bottom:3px}
+.pr .t a:hover{text-decoration:underline}
+.pr p{font-size:14px;line-height:1.7}
+
+/* routing diagram */
+.route{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px;font-family:var(--mono);font-size:11.5px}
+.route .col{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--panel)}
+.route .col .ttl{font-size:10.5px;letter-spacing:.06em;color:var(--tx3);margin-bottom:8px}
+.route .nd{border:1px solid var(--line2);border-radius:5px;padding:5px 8px;text-align:center;background:var(--bg2)}
+.route .ar{text-align:center;color:var(--tx3);font-size:11px;line-height:1.6}
+.route .bad{border-color:#E0B9A8;color:var(--acc-d);background:var(--acc-ll);text-decoration:line-through;text-decoration-color:rgba(200,90,50,.5)}
+.route .good{border-color:#BBD0B8;color:#3F6B45;background:#EEF4EC}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.vgrid div{font-family:var(--mono);font-size:11px;border:1px solid #C7D8C5;background:#F3F7F2;color:#3F6B45;border-radius:6px;padding:10px 12px;line-height:1.3}
+.vgrid div b{display:block;font-size:15px;color:#2F5435}
+
+/* research */
+.soc{display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:11.5px;margin-top:22px}
+.soc .row{display:flex;gap:6px}
+.soc .blk{flex:1;border:1px solid var(--line2);border-radius:7px;padding:10px 13px;background:var(--panel)}
+.soc .blk small{display:block;color:var(--tx3);font-size:10.5px}
+.soc .blk.a{border-color:var(--acc-l);background:var(--acc-ll)}
+.soc .ar{text-align:center;color:var(--tx3);font-size:10.5px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.tags span{font-family:var(--mono);font-size:11px;color:var(--tx2);border:1px solid var(--line);background:var(--panel);padding:3px 8px;border-radius:4px}
+.stage.sm{height:100%;min-height:440px}
+
+/* projects */
+.proj-hd{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.proj-hd h3{font-family:var(--serif);font-size:32px;font-weight:600;letter-spacing:-.02em}
+.proj-hd .lang{font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+.q{font-family:var(--serif);font-style:italic;color:var(--acc);font-size:18px;margin-bottom:22px}
+ul.pts{list-style:none;font-size:14.5px;color:var(--tx2);margin-top:6px}
+ul.pts li{padding-left:18px;position:relative;margin-top:12px;line-height:1.7}
+ul.pts li::before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;background:var(--acc);border-radius:1px;transform:rotate(45deg)}
+.lnk{font-family:var(--mono);font-size:12px;color:var(--acc);display:inline-block;margin-top:12px}
+.lnk:hover{text-decoration:underline}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:24px 0 20px}
+.kpis div{background:var(--panel);padding:16px 16px}
+.kpis b{display:block;font-family:var(--serif);font-size:22px;font-weight:600;color:var(--acc);line-height:1.15}
+.kpis span{font-size:11.5px;color:var(--tx3);line-height:1.45;display:block;margin-top:4px}
+@media(max-width:600px){.kpis{grid-template-columns:1fr 1fr}}
+
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 20px 14px;align-self:start}
+.chart .ct{font-family:var(--mono);font-size:11.5px;color:var(--tx);font-weight:500}
+.chart .cs{font-family:var(--mono);font-size:10.5px;color:var(--tx3);margin:3px 0 12px}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart svg text{font-family:var(--mono);font-size:10px;fill:var(--tx3)}
+.chart svg .v{fill:var(--tx);font-weight:500}
+.leg{display:flex;gap:14px;font-family:var(--mono);font-size:10.5px;color:var(--tx2);margin-top:4px}
+.leg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.tip{position:fixed;pointer-events:none;background:var(--tx);color:var(--bg);font-family:var(--mono);font-size:11px;padding:5px 8px;border-radius:5px;opacity:0;transition:opacity .12s;z-index:100;white-space:nowrap}
+
+pre.code{font-family:var(--mono);font-size:12px;line-height:1.8;background:#2A2724;color:#E9E3DA;border-radius:10px;padding:20px 22px;overflow-x:auto;margin-top:22px}
+pre.code .k{color:#E89A73}.pre.code .c,pre.code .c{color:#8E877D}.pre.code .s,pre.code .s{color:#B9C9A0}.pre.code .n,pre.code .n{color:#E6C17A}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+@media(max-width:900px){.skills{grid-template-columns:1fr 1fr}}
+.sk h4{font-family:var(--mono);font-size:11.5px;color:var(--acc);font-weight:500;letter-spacing:.05em;margin-bottom:14px;text-transform:uppercase}
+.sk .chips{display:flex;flex-wrap:wrap;gap:8px}
+.sk .chips span{font-size:13px;border:1px solid var(--line);background:var(--bg2);padding:5px 11px;border-radius:5px;color:var(--tx2)}
+
+/* contact */
+.contact{margin:112px 0 0;background:var(--tx);color:var(--bg);border-radius:16px;padding:64px 56px;display:grid;grid-template-columns:1.3fr 1fr;gap:30px;align-items:center}
+@media(max-width:860px){.contact{grid-template-columns:1fr;padding:40px 28px}.card{padding:24px 22px}section{padding:80px 0 12px}}
+.contact h2{color:var(--bg);line-height:1.15;font-size:clamp(28px,3.6vw,40px)}
+.contact h2 em{color:#E8875F;font-style:italic}
+.contact p{color:#BDB5AA;margin-top:12px}
+.contact .links{display:flex;flex-direction:column;gap:8px}
+.contact .links a,.contact .links button{display:flex;justify-content:space-between;align-items:center;border:1px solid #3B3733;border-radius:8px;padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--bg);background:transparent;cursor:pointer;transition:all .15s;text-align:left}
+.contact .links a:hover,.contact .links button:hover{border-color:var(--acc);color:#E8875F}
+.contact .links .p{background:var(--acc);border-color:var(--acc)}
+.contact .links .p:hover{background:var(--acc-d);color:#fff}
+footer{padding:36px 0 48px;font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top">Vaibhav Binwal<span>.</span></a>
+  <div class="navlinks">
+    <a href="#riscv">RISC-V</a><a href="#research">Research</a><a href="#zerokv">ZeroKV</a><a href="#sentinel">Sentinel-X</a><a href="#onitro">Onitro</a><a class="nbtn" href="#contact">Contact</a>
+  </div>
+</div></nav>
+
+<!-- HERO -->
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <div class="tag"><i></i>LFX Mentorship Fall 2026 · interview stage · hardware CFI on RISC-V</div>
+    <h1>I work where the <em>ISA</em> meets the metal.</h1>
+    <p class="lede">RISC-V open-source contributor and systems engineer at <b>IIT Jodhpur</b>. I audit processor RTL against the spec, fix trap handling in the official compliance suite, and switch on vector kernels that were quietly never running. Then I build kernel-bypass and in-kernel systems and measure them against real baselines.</p>
+    <div class="cta">
+      <a class="btn pri" href="#riscv">RISC-V contributions ↓</a>
+      <a class="btn" href="https://github.com/Vaibhav805">github.com/Vaibhav805 ↗</a>
+      <a class="btn" href="https://www.linkedin.com/in/vaibhav-binwal-93670236a/">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="stage" id="stackStage">
+    <span class="cap2">drag to rotate</span>
+    <span class="cap">one stack, four layers: where each piece of work sits</span>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="stats reveal">
+    <div class="stat"><b>6</b><span>FP-decoder legality bugs found in Sargantana RTL</span></div>
+    <div class="stat"><b>3</b><span>merged upstream PRs: riscv-arch-test &amp; OpenBLAS</span></div>
+    <div class="stat"><b>724</b><span>RVV instructions verified after the OpenBLAS kernel fix</span></div>
+    <div class="stat"><b>4<small> µs</small></b><span>p50 RDMA GET in ZeroKV, vs 7 µs Redis</span></div>
+    <div class="stat"><b>45.3<small>M</small></b><span>packets through Sentinel-X's XDP path at 96.51% drop accuracy</span></div>
+  </div>
+</div>
+
+<!-- RISC-V -->
+<section id="riscv"><div class="wrap">
+  <div class="sh reveal"><span class="n">01</span><h2>RISC-V open source</h2></div>
+  <p class="sub reveal">The centre of my work: processor RTL, the architectural compliance suite, and the HPC software that runs on top.</p>
+
+  <div class="card reveal">
+    <div class="hd">
+      <div>
+        <h3>Sargantana: FP decoder ISA-compliance audit</h3>
+        <div class="meta"><a href="https://github.com/bsc-loca/sargantana">bsc-loca/sargantana</a> · SystemVerilog · 64-bit in-order RISC-V core (BSC)</div>
+      </div>
+      <span class="pill o">6 issues raised · fixes + regression tests in progress</span>
+    </div>
+    <p>While preparing for the <b>hardware-enforced CFI</b> mentorship on this core, I read the instruction decoder against the spec, looking for encodings that should raise an illegal-instruction trap but don't. Almost every bug sits in two fields of the OP-FP encoding. <b>Hover an issue</b> to see which field it hits.</p>
+    <div class="bitfield">
+      <div class="bf" id="bf">
+        <div data-f="funct5" style="flex:5"><b>funct5</b><span>31:27</span></div>
+        <div data-f="fmt" style="flex:2"><b>fmt</b><span>26:25</span></div>
+        <div data-f="rs2" style="flex:5"><b>rs2</b><span>24:20</span></div>
+        <div data-f="rs1" style="flex:5"><b>rs1</b><span>19:15</span></div>
+        <div data-f="rm" style="flex:3"><b>rm</b><span>14:12</span></div>
+        <div data-f="rd" style="flex:5"><b>rd</b><span>11:7</span></div>
+        <div data-f="op" style="flex:7"><b>opcode</b><span>6:0 · 1010011</span></div>
+      </div>
+      <div class="bfnote" id="bfnote">OP-FP R-type encoding · 32 bits</div>
+    </div>
+    <div class="iss" id="iss">
+      <div class="is" data-f="fmt" data-n="fmt = 11 (Q) must trap: default case clears the illegal flag"><div class="h"><i>01</i>fmt = Q</div><p>Quad-precision accepted instead of trapping. Decoder handles S/D/H, but the <code>default</code> case clears the illegal-instruction exception.</p></div>
+      <div class="is" data-f="rs2" data-n="rs2 reserved, must be 00000: check exists but is commented out"><div class="h"><i>02</i>FSQRT.*</div><p>Accepts non-zero <code>rs2</code>. The legality check is in the decoder, but commented out.</p></div>
+      <div class="is" data-f="rs2" data-n="rs2 = type selector: reserved values must trap"><div class="h"><i>03</i>FCVT.{W,WU,L,LU}.{S,D,H}</div><p>Reserved <code>rs2</code> type-selector values are not rejected.</p></div>
+      <div class="is" data-f="rs2" data-n="rs2 = type selector on the reciprocal path: same gap"><div class="h"><i>04</i>FCVT.{S,D,H}.{W,WU,L,LU}</div><p>The reciprocal conversion path lacks the same selector validation.</p></div>
+      <div class="is" data-f="rs2" data-n="rs2 reserved, must be 00000"><div class="h"><i>05</i>FMV.X.* / FCLASS.*</div><p>Accept non-zero <code>rs2</code> even though the field is reserved.</p></div>
+      <div class="is" data-f="rs2" data-n="rs2 ∈ {0: FMV, 1: Zfa FLI}; anything else must trap"><div class="h"><i>06</i>FMV.*.X</div><p>Accepts any <code>rs2</code>. Only <code>0</code> (FMV) and <code>1</code> (Zfa FLI) are legal.</p></div>
+    </div>
+    <p class="mt">Next: the Sargantana pipeline and the CFI extensions, <b>Zicfiss</b> (shadow stack) and <b>Zicfilp</b> (landing pads), leading to commit-time validation of indirect-branch targets.</p>
+  </div>
+
+  <div class="g2 mt">
+    <div class="card reveal">
+      <div class="hd">
+        <div><h3>riscv-arch-test: trap &amp; exception correctness</h3>
+        <div class="meta"><a href="https://github.com/riscv/riscv-arch-test">riscv/riscv-arch-test</a> · official architectural compliance suite</div></div>
+        <span class="pill m">2 merged</span>
+      </div>
+      <p>Two bugs where the test framework itself corrupted architectural state during exception handling. A compliance suite can't afford that class of bug.</p>
+      <div class="pr"><div class="t"><a href="https://github.com/riscv/riscv-arch-test/issues/1727">MERGED · fixes #1727</a></div><p><code>failedtest_saveresults_int</code> took a secondary trap that overwrote the original <code>mcause</code>. The fix bounds-checks the expected-value pointer against <code>rvtest_sig_begin</code>/<code>_end</code>.</p></div>
+      <div class="pr"><div class="t"><a href="https://github.com/riscv/riscv-arch-test/issues/1753">MERGED · fixes #1753</a></div><p><code>ExceptionsS</code> aborted on a misaligned load/store exception. Root causes: a redundant <code>sp</code> adjustment in the trap handler and a <code>TRAP_SIGUPD_COUNT</code> overflow.</p></div>
+      <pre class="code"><span class="c"># trap path, before fix #1727</span>
+<span class="k">trap</span> → failedtest_saveresults_int
+     → load expected[ptr]   <span class="c"># ptr outside signature</span>
+     → <span class="n">2nd trap</span>: mcause ← <span class="s">load-access-fault</span>  <span class="c"># original lost</span>
+<span class="c"># after: ptr ∈ [rvtest_sig_begin, rvtest_sig_end) or skip</span></pre>
+    </div>
+
+    <div class="card reveal">
+      <div class="hd">
+        <div><h3>OpenBLAS: activating RVV kernels that never ran</h3>
+        <div class="meta"><a href="https://github.com/OpenMathLib/OpenBLAS/pull/5819">OpenMathLib/OpenBLAS #5819</a> · co-authored with <a href="https://github.com/trg-rgb">@trg-rgb</a></div></div>
+        <span class="pill m">merged</span>
+      </div>
+      <p>The RISC-V Vector kernels were in the tree, but a bug in the <b>KERNEL routing file</b> meant the build never selected them, so <code>RISCV64_GENERIC</code> silently produced scalar code. I fixed the mappings and validated the result end to end. The PR also documents the <b>GCC 14+</b> requirement for <code>ZVL128B</code>/<code>ZVL256B</code>.</p>
+      <div class="route">
+        <div class="col"><div class="ttl">BEFORE</div><div class="nd">TARGET=RISCV64_*</div><div class="ar">↓ KERNEL file</div><div class="nd bad">RVV kernels</div><div class="ar">↓ fallback</div><div class="nd">scalar C</div></div>
+        <div class="col"><div class="ttl">AFTER</div><div class="nd">TARGET=RISCV64_*</div><div class="ar">↓ fixed mapping</div><div class="nd good">RVV kernels ✓</div><div class="ar">↓</div><div class="nd good">vector code</div></div>
+      </div>
+      <div class="vgrid">
+        <div><b>724</b>RVV instrs in binary</div>
+        <div><b>42/42</b>DGEMM cases</div>
+        <div><b>L1·L2·L3</b>BLAS validated</div>
+        <div><b>LAPACK</b>validation</div>
+        <div><b>stress</b>numerical</div>
+        <div><b>repro</b>bit-reproducibility</div>
+      </div>
+      <p class="mt"><b>Found during LFX (Spring)</b> on the HAL Transitional Libraries with mentor <b>Kurt Keville (MIT)</b>: a riscv64 cross-compile and validation pipeline, plus <code>hal/simd.h</code>, a SIMD shim with RVV, AVX2+FMA, SSE2 and scalar backends.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- RESEARCH -->
+<section id="research"><div class="wrap">
+  <div class="sh reveal"><span class="n">02</span><h2>Research</h2></div>
+  <p class="sub reveal">B.Tech major project: hardware/software co-design, from ISA extension down to cycle-exact RTL.</p>
+  <div class="g-7-5 reveal">
+    <div class="stage sm" id="saStage">
+      <span class="cap2">systolic array · anti-diagonal wavefront</span>
+      <span class="cap">each PE computes one DP cell; a wave sweeps the matrix</span>
+    </div>
+    <div class="card">
+      <h3>Hardware-Software Co-Design of a RISC-V Acceleration Engine for High-Throughput Sequence Alignment</h3>
+      <div class="meta">Advisor: Prof. Palash Das · IIT Jodhpur · ongoing</div>
+      <p class="mt">An FPGA-hosted SoC that pairs a <b>64-bit RISC-V core</b> with a custom <b>systolic-array coprocessor</b> for genomic sequence alignment. We're exploring <b>2-bit nucleotide encoding</b> and parallel processing elements to raise compute density. <b>Custom ISA extensions</b> drive the accelerator over <b>RoCC / AXI-DMA</b>.</p>
+      <div class="soc">
+        <div class="blk a"><b>software</b> alignment kernel<small>issues custom RISC-V instructions</small></div>
+        <div class="ar">↓ custom ISA ext</div>
+        <div class="row"><div class="blk"><b>RV64 core</b><small>host</small></div><div class="blk"><b>RoCC</b><small>cmd / resp</small></div></div>
+        <div class="ar">↓ AXI-DMA · 2-bit packed bases (A=00 C=01 G=10 T=11)</div>
+        <div class="blk a"><b>systolic PE array</b><small>parallel DP wavefront</small></div>
+      </div>
+      <p class="mt">Verified pre-silicon with the <b>Spike</b> ISA simulator and cycle-exact SystemVerilog in <b>Verilator</b>.</p>
+      <div class="tags"><span>SystemVerilog</span><span>RoCC</span><span>AXI DMA</span><span>Spike</span><span>Verilator</span><span>FPGA</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ZEROKV -->
+<section id="zerokv"><div class="wrap">
+  <div class="sh reveal"><span class="n">03</span><h2>Systems projects</h2></div>
+  <p class="sub reveal">Each one is built to answer a single question, then measured against a real baseline.</p>
+
+  <div class="card reveal">
+    <div class="proj-hd"><h3>ZeroKV</h3><span class="lang">Rust · libibverbs · RDMA / RoCE · <a class="lnk" style="margin:0" href="https://github.com/Vaibhav805/ZeroKV">repo ↗</a></span></div>
+    <div class="q">How fast can a GET be if the server never wakes up?</div>
+    <div class="g-7-5">
+      <div>
+        <p>A key-value store whose read path bypasses both the kernel <i>and</i> the server CPU. Clients issue one-sided <b>RDMA READs</b> straight into the server's registered memory, and the NIC does the copy. Writes use the <b>HERD</b> pattern: an RDMA-WRITE into a per-core message buffer, picked up by spinning poller threads.</p>
+        <div class="kpis">
+          <div><b>4 µs</b><span>p50 GET (Redis 7)</span></div>
+          <div><b>88×</b><span>lower max latency</span></div>
+          <div><b>126K</b><span>ops/s · 8 threads · 0 mismatches</span></div>
+          <div><b>0.10 µs</b><span>p50 cached, Zipf-1.2</span></div>
+        </div>
+        <ul class="pts">
+          <li><b>Cuckoo hash + seqlock slots</b>: 64-byte slots with a split version word. Torn reads are detected and retried without locks (18 of 800K, all recovered).</li>
+          <li><b>One QP/CQ/MR per thread</b>: RC QPs aren't thread-safe, and with a shared CQ one thread can steal another's completion.</li>
+          <li><b>Async batching up to 32 deep</b>, with an auto-drain every 64 unsignaled WRs to prevent silent SQ overflow.</li>
+          <li>Debugged GID-index mismatches, 128-byte <code>MsgSlot</code> alignment and SoftRoCE routing.</li>
+        </ul>
+      </div>
+      <div class="chart"><div class="ct">GET latency · single thread</div><div class="cs">log scale, µs · lower is better</div><svg id="cLat" viewBox="0 0 400 230"></svg>
+        <div class="leg"><span><i style="background:var(--acc)"></i>ZeroKV (RDMA)</span><span><i style="background:var(--line2)"></i>Redis (TCP loopback)</span></div></div>
+    </div>
+    <div class="g2 mt">
+      <div class="chart"><div class="ct">Batched async GETs: throughput vs latency</div><div class="cs">batch depth 1 → 32 · peak 79,915 ops/s (1.28× sync)</div><svg id="cBatch" viewBox="0 0 400 210"></svg></div>
+      <div class="chart"><div class="ct">Client-side LRU cache by key distribution</div><div class="cs">hit rate (bars) · p50 latency (labels)</div><svg id="cCache" viewBox="0 0 400 210"></svg></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- SENTINEL -->
+<section id="sentinel" style="padding-top:36px"><div class="wrap">
+  <div class="card reveal">
+    <div class="proj-hd"><h3>Sentinel-X</h3><span class="lang">C (eBPF/XDP) · Python · Next.js · <a class="lnk" style="margin:0" href="https://github.com/Vaibhav805/sentinel-x">repo ↗</a></span></div>
+    <div class="q">Drop the packet before the kernel pays for it.</div>
+    <div class="g-7-5">
+      <div>
+        <p>DDoS mitigation at the XDP hook, before any <code>sk_buff</code> is allocated. The fast path does an LPM-trie blacklist lookup and a per-IP rate-limit lookup. An asynchronous control plane reads a BPF ring buffer and runs <b>XGBoost + Isolation Forest</b> (trained on CICIDS2017) to rewrite the rules live, so the kernel program never blocks.</p>
+        <div class="kpis">
+          <div><b>96.51%</b><span>drop accuracy</span></div>
+          <div><b>0.31%</b><span>false positives</span></div>
+          <div><b>0.066 ms</b><span>p99 verdict under flood</span></div>
+          <div><b>5.2 MB</b><span>all kernel maps</span></div>
+        </div>
+        <ul class="pts">
+          <li><b>Per-CPU arrays</b> for lockless telemetry: no atomics and no shared cache lines on the hot path.</li>
+          <li><b>Ring buffer instead of perf-event array</b>: FIFO ordering and one shared buffer instead of N per-CPU buffers.</li>
+          <li>Verifier-safe bounded parsing. Validated on veth namespaces, which cap the testbed at about 2–3 Mpps.</li>
+        </ul>
+      </div>
+      <div class="chart"><div class="ct">Per-packet budget across XDP stages</div><div class="cs">estimated ns per stage (range) · total under 100 ns</div><svg id="cXdp" viewBox="0 0 400 230"></svg></div>
+    </div>
+    <div class="chart mt"><div class="ct">Where the drop happens determines what it costs</div><div class="cs">latency under flood, log ms · Sentinel-X measured; other layers are reference ranges</div><svg id="cCmp" viewBox="0 0 800 190"></svg></div>
+  </div>
+</div></section>
+
+<!-- ONITRO -->
+<section id="onitro" style="padding-top:36px"><div class="wrap">
+  <div class="card reveal">
+    <div class="proj-hd"><h3>Onitro</h3><span class="lang">C++ · AVX2 · OpenMP · CMake · group project</span></div>
+    <div class="q">A vectorised Monte Carlo derivatives pricing engine.</div>
+    <div class="g2">
+      <div>
+        <p>I own the <b>fixed-income pricing module</b> and a <b>Monte Carlo engine</b> for European and Asian options.</p>
+        <ul class="pts">
+          <li><b>Variance reduction</b> with antithetic and control variates.</li>
+          <li><b>Per-option PCG32 RNG streams</b> for reproducible, parallel-safe sampling.</li>
+          <li>Paths are processed in chunks behind an <code>ONITRO_SIMD</code> macro, with SIMD expansion controlled from CMake rather than raw <code>#pragma omp simd</code>.</li>
+          <li>All SIMD lives in one dedicated header, so the pricing maths stays readable and testable on its own.</li>
+        </ul>
+        <div class="tags"><span>AVX2</span><span>PCG32</span><span>antithetic</span><span>control variates</span><span>fixed income</span></div>
+      </div>
+      <pre class="code" style="margin-top:0"><span class="c">// illustrative sketch of module_4's loop structure</span>
+<span class="k">for</span> (size_t c = 0; c &lt; n_paths; c += CHUNK) {
+  <span class="n">ONITRO_SIMD</span>                 <span class="c">// expands per CMake option</span>
+  <span class="k">for</span> (size_t i = 0; i &lt; CHUNK; ++i) {
+    <span class="k">double</span> z  = rng[opt].normal();  <span class="c">// PCG32 stream</span>
+    <span class="k">double</span> s1 = path(S0, z);
+    <span class="k">double</span> s2 = path(S0, -z);       <span class="c">// antithetic</span>
+    acc += <span class="n">0.5</span> * (payoff(s1) + payoff(s2))
+         - beta * (cv(s1) - cv_mean); <span class="c">// control variate</span>
+  }
+}</pre>
+    </div>
+  </div>
+</div></section>
+
+<!-- SKILLS -->
+<section id="skills"><div class="wrap">
+  <div class="sh reveal"><span class="n">04</span><h2>Toolbox</h2></div>
+  <div class="skills reveal mt">
+    <div class="sk"><h4>Hardware &amp; ISA</h4><div class="chips"><span>RISC-V ISA</span><span>F / D / Zfa</span><span>Privileged spec</span><span>RVV</span><span>Zicfiss / Zicfilp</span><span>SystemVerilog</span><span>Verilator</span><span>Spike</span><span>Sail</span><span>RoCC</span><span>FPGA</span></div></div>
+    <div class="sk"><h4>Languages</h4><div class="chips"><span>C</span><span>C++</span><span>Rust</span><span>RISC-V asm</span><span>Python</span></div></div>
+    <div class="sk"><h4>Systems</h4><div class="chips"><span>eBPF / XDP</span><span>libbpf</span><span>RDMA verbs</span><span>RoCE</span><span>seqlocks</span><span>lock-free</span><span>AVX2 / SSE2</span><span>OpenMP</span></div></div>
+    <div class="sk"><h4>Tooling</h4><div class="chips"><span>GCC / Clang cross</span><span>CMake</span><span>Cargo</span><span>QEMU</span><span>perf</span><span>Linux</span><span>XGBoost</span><span>Git upstream review</span></div></div>
+  </div>
+
+  <div class="contact reveal" id="contact">
+    <div>
+      <h2>Let's build something <em>close to the hardware.</em></h2>
+      <p>Open to RISC-V, hardware-security and low-latency systems roles, mentorships and research collaborations.</p>
+    </div>
+    <div class="links">
+      <a class="p" href="mailto:binwalvaibhav@gmail.com"><span>binwalvaibhav@gmail.com</span><span>→</span></a>
+      <button id="copy"><span>Copy email</span><span>⧉</span></button>
+      <a href="https://github.com/Vaibhav805"><span>github.com/Vaibhav805</span><span>↗</span></a>
+      <a href="https://www.linkedin.com/in/vaibhav-binwal-93670236a/"><span>linkedin / vaibhav-binwal</span><span>↗</span></a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap"><span>© 2026 Vaibhav Binwal · IIT Jodhpur</span><span>hand-written HTML · three.js · no frameworks</span></div></footer>
+
+<script>
+const C={acc:'#C85A32',accD:'#A8461F',accL:'#F3E1D8',line:'#E2DDD5',line2:'#D2CBC0',tx:'#1C1B1A',tx3:'#8E877D',sage:'#6E8A6B',slate:'#4F6C88',ochre:'#C79A3E'};
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function txt(p,x,y,s,a={}){const e=el('text',Object.assign({x,y},a),p);e.textContent=s;return e}
+const tip=document.getElementById('tip');
+function hov(e,s){e.style.cursor='default';e.addEventListener('mousemove',ev=>{tip.textContent=s;tip.style.opacity=1;tip.style.left=(ev.clientX+12)+'px';tip.style.top=(ev.clientY-28)+'px'});e.addEventListener('mouseleave',()=>tip.style.opacity=0)}
+const lg=v=>Math.log10(v);
+function tw(e,attrs,dur=900,delay=0){const from={};for(const k in attrs)from[k]=+e.getAttribute(k)||0;const t0=performance.now()+delay;
+  (function f(t){let p=Math.min(1,Math.max(0,(t-t0)/dur));const q=1-Math.pow(1-p,3);for(const k in attrs)e.setAttribute(k,from[k]+(attrs[k]-from[k])*q);if(p<1)requestAnimationFrame(f)})(performance.now());}
+
+/* ZeroKV latency: grouped log bars */
+(function(){
+  const s=document.getElementById('cLat'),L=46,R=390,T=12,B=196;
+  const ymin=0,ymax=4; const y=v=>B-(lg(v)-ymin)/(ymax-ymin)*(B-T);
+  [1,10,100,1000,10000].forEach(v=>{el('line',{x1:L,x2:R,y1:y(v),y2:y(v),stroke:C.line,'stroke-dasharray':v==1?'':'2 3'},s);txt(s,L-6,y(v)+3,v>=1000?(v/1000)+'k':v,{'text-anchor':'end'})});
+  const d=[['p50',4,7],['p99',10,23],['max',42,3711]];
+  const gw=(R-L)/3;
+  d.forEach((r,i)=>{const cx=L+gw*i+gw/2,bw=38;
+    [[r[1],C.acc,-bw-3,'ZeroKV'],[r[2],C.line2,3,'Redis']].forEach(([v,c,dx,n])=>{
+      const top=y(v),rc=el('rect',{x:cx+dx,y:B,width:bw,height:0,fill:c,rx:3},s);
+      rc.dataset.y=top;hov(rc,`${n} ${r[0]}: ${v.toLocaleString()} µs`);
+      txt(s,cx+dx+bw/2,top-5,v.toLocaleString(),{'text-anchor':'middle',class:'v'});
+    });
+    txt(s,cx,B+16,r[0],{'text-anchor':'middle'});
+  });
+  txt(s,L+gw*2+gw/2,y(3711)-18,'88× gap',{'text-anchor':'middle',fill:C.acc,'font-weight':600});
+  s._anim=()=>s.querySelectorAll('rect').forEach(r=>{const t=+r.dataset.y;tw(r,{y:t,height:B-t})});
+})();
+
+/* Batch throughput-latency */
+(function(){
+  const s=document.getElementById('cBatch'),L=50,R=385,T=14,B=176;
+  const d=[['sync',15.55,62314],[1,17.49,56745],[4,54.49,73255],[8,104.45,76500],[16,205.44,78438],[32,400.64,79915]];
+  const x=v=>L+(lg(v)-1)/(lg(500)-1)*(R-L), y=v=>B-(v-50000)/(85000-50000)*(B-T);
+  [50000,60000,70000,80000].forEach(v=>{el('line',{x1:L,x2:R,y1:y(v),y2:y(v),stroke:C.line,'stroke-dasharray':'2 3'},s);txt(s,L-6,y(v)+3,(v/1000)+'k',{'text-anchor':'end'})});
+  [10,20,50,100,200,500].forEach(v=>txt(s,x(v),B+15,v+'µs',{'text-anchor':'middle'}));
+  txt(s,R,B+28,'p50 latency (log) →',{'text-anchor':'end'});
+  const pts=d.slice(1).map(r=>`${x(r[1])},${y(r[2])}`).join(' ');
+  const pl=el('polyline',{points:pts,fill:'none',stroke:C.acc,'stroke-width':2},s);
+  const len=600;pl.style.strokeDasharray=len;pl.style.strokeDashoffset=len;
+  d.forEach((r,i)=>{const c=el('circle',{cx:x(r[1]),cy:y(r[2]),r:i==5?6:4.5,fill:i==0?C.slate:C.acc,stroke:'#fff','stroke-width':1.5},s);
+    hov(c,`${r[0]=='sync'?'sync':'batch-'+r[0]}: ${r[2].toLocaleString()} ops/s · p50 ${r[1]} µs`);
+    txt(s,x(r[1])+(i==0?-8:0),y(r[2])+(i==0?-10:(i==1?16:-11)),r[0]=='sync'?'sync':'×'+r[0],{'text-anchor':i==0?'end':'middle',class:'v'})});
+  s._anim=()=>pl.style.transition='stroke-dashoffset 1.2s ease-out';requestAnimationFrame(()=>pl.style.strokeDashoffset=0);
+})();
+
+/* Cache hits */
+(function(){
+  const s=document.getElementById('cCache'),L=40,R=390,T=14,B=170;
+  const d=[['uniform',0.98,16.69],['zipf-0.9',34.35,16.07],['zipf-1.2',79.45,0.10]];
+  const y=v=>B-v/100*(B-T);
+  [0,25,50,75,100].forEach(v=>{el('line',{x1:L,x2:R,y1:y(v),y2:y(v),stroke:C.line,'stroke-dasharray':v?'2 3':''},s);txt(s,L-6,y(v)+3,v+'%',{'text-anchor':'end'})});
+  const gw=(R-L)/3;
+  d.forEach((r,i)=>{const bw=64,bx=L+gw*i+gw/2-bw/2,top=y(Math.max(r[1],1.2));
+    el('rect',{x:bx,y:T,width:bw,height:B-T,fill:'#F6F3EE',rx:3},s);
+    const rc=el('rect',{x:bx,y:B,width:bw,height:0,fill:i==2?C.acc:C.ochre,rx:3},s);rc.dataset.y=top;
+    hov(rc,`${r[0]}: ${r[1]}% hits · p50 ${r[2]} µs`);
+    txt(s,bx+bw/2,top-6,r[1]+'%',{'text-anchor':'middle',class:'v'});
+    txt(s,bx+bw/2,B+15,r[0],{'text-anchor':'middle'});
+    txt(s,bx+bw/2,B+29,'p50 '+r[2]+' µs',{'text-anchor':'middle',fill:i==2?C.acc:C.tx3,'font-weight':i==2?600:400});
+  });
+  s._anim=()=>s.querySelectorAll('rect[data-y]').forEach(r=>{const t=+r.dataset.y;tw(r,{y:t,height:B-t})});
+})();
+
+/* XDP stage budget: range bars */
+(function(){
+  const s=document.getElementById('cXdp'),L=96,R=388,T=10;
+  const d=[['1 · parse',3,5,'eth→ip→l4, bounds-checked'],['2 · LPM trie',15,40,'blacklist, O(log N)'],['3 · rate hash',10,20,'per-IP counter, O(1)'],['4 · stats',2,5,'per-CPU, no atomics'],['5 · ringbuf',5,10,'async event to ML']];
+  const x=v=>L+v/45*(R-L),rh=30;
+  [0,10,20,30,40].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:T,y2:T+rh*5+4,stroke:C.line,'stroke-dasharray':v?'2 3':''},s);txt(s,x(v),T+rh*5+18,v+'ns',{'text-anchor':'middle'})});
+  d.forEach((r,i)=>{const yy=T+i*rh+8;
+    txt(s,L-8,yy+10,r[0],{'text-anchor':'end',fill:C.tx});
+    const b=el('rect',{x:x(r[1]),y:yy,width:0,height:14,rx:7,fill:i==1?C.acc:'#E3A688'},s);b.dataset.w=x(r[2])-x(r[1]);
+    hov(b,`${r[0].slice(4)}: ${r[1]}–${r[2]} ns · ${r[3]}`);
+    txt(s,x(r[2])+6,yy+11,r[1]+'–'+r[2],{class:'v'});
+  });
+  txt(s,L,T+rh*5+34,'Σ ≈ 35–80 ns → XDP_DROP before sk_buff allocation',{fill:C.acc,'font-weight':600});
+  s._anim=()=>s.querySelectorAll('rect').forEach((r,i)=>tw(r,{width:+r.dataset.w},700,i*90));
+})();
+
+/* Comparison: log range bars */
+(function(){
+  const s=document.getElementById('cCmp'),L=210,R=780,T=6;
+  const d=[['Sentinel-X · XDP_DRV',0.012,0.066,'measured: p50 0.012 / p99 0.066 ms',1],['DPDK · kernel bypass',0.05,0.2,'reference range',0],['tc eBPF · TC ingress',0.5,2,'reference range',0],['iptables · netfilter',2,15,'reference range',0],['Snort/Suricata · inline',5,50,'reference range',0]];
+  const x=v=>L+(lg(v)+2)/(lg(100)+2)*(R-L),rh=30;
+  [0.01,0.1,1,10,100].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:T,y2:T+rh*5,stroke:C.line,'stroke-dasharray':'2 3'},s);txt(s,x(v),T+rh*5+14,v+' ms',{'text-anchor':'middle'})});
+  d.forEach((r,i)=>{const yy=T+i*rh+8;
+    txt(s,L-10,yy+11,r[0],{'text-anchor':'end',fill:r[4]?C.acc:C.tx,'font-weight':r[4]?600:400});
+    const b=el('rect',{x:x(r[1]),y:yy,width:0,height:14,rx:7,fill:r[4]?C.acc:C.line2},s);b.dataset.w=x(r[2])-x(r[1]);
+    hov(b,`${r[0]}: ${r[1]}–${r[2]} ms · ${r[3]}`);
+    txt(s,x(r[2])+7,yy+11,r[1]+'–'+r[2]+' ms',{class:r[4]?'v':''});
+  });
+  s._anim=()=>s.querySelectorAll('rect').forEach((r,i)=>tw(r,{width:+r.dataset.w},800,i*100));
+})();
+
+/* bitfield interaction */
+(function(){
+  const bf=[...document.querySelectorAll('#bf div')],note=document.getElementById('bfnote'),def=note.textContent;
+  const set=f=>bf.forEach(d=>{d.classList.toggle('hot',d.dataset.f===f);d.classList.toggle('warm',f&&d.dataset.f==='funct5')});
+  document.querySelectorAll('#iss .is').forEach(is=>{
+    is.addEventListener('mouseenter',()=>{set(is.dataset.f);note.textContent=is.dataset.n;is.classList.add('act')});
+    is.addEventListener('mouseleave',()=>{set(null);note.textContent=def;is.classList.remove('act')});
+  });
+  let k=0;const auto=setInterval(()=>{if(document.querySelector('#iss .is:hover'))return;const f=['fmt','rs2'][k++%2];set(f)},1600);
+})();
+
+/* reveal + chart anim */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');e.target.querySelectorAll('svg').forEach(s=>{if(s._anim&&!s._done){s._done=1;s._anim()}});io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* nav */
+const secs=[...document.querySelectorAll('section[id]')],nl=[...document.querySelectorAll('.navlinks a')];
+addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(scrollY>=s.offsetTop-120)cur=s.id});nl.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur))},{passive:true});
+document.getElementById('copy').addEventListener('click',async e=>{const b=e.currentTarget.firstElementChild;try{await navigator.clipboard.writeText('binwalvaibhav@gmail.com');b.textContent='Copied ✓'}catch(_){b.textContent='binwalvaibhav@gmail.com'}setTimeout(()=>b.textContent='Copy email',2000)});
+
+/* ===== 3D ===== */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function makeScene(stage,camPos){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(w,h);
+  stage.insertBefore(r.domElement,stage.firstChild);
+  const sc=new THREE.Scene();const cam=new THREE.PerspectiveCamera(32,w/h,.1,100);cam.position.set(...camPos);cam.lookAt(0,0,0);
+  sc.add(new THREE.HemisphereLight(0xffffff,0xd9cfc2,.85));
+  const dl=new THREE.DirectionalLight(0xffffff,.55);dl.position.set(4,8,5);sc.add(dl);
+  addEventListener('resize',()=>{const w=stage.clientWidth,h=stage.clientHeight;r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()});
+  // drag rotate
+  const st={rx:0,ry:0,tx:0,ty:0,drag:false,px:0,py:0};
+  r.domElement.addEventListener('pointerdown',e=>{st.drag=true;st.px=e.clientX;st.py=e.clientY;r.domElement.setPointerCapture(e.pointerId)});
+  r.domElement.addEventListener('pointerup',()=>st.drag=false);
+  r.domElement.addEventListener('pointermove',e=>{if(!st.drag)return;st.ty+=(e.clientX-st.px)*.008;st.tx+=(e.clientY-st.py)*.004;st.tx=Math.max(-.4,Math.min(.4,st.tx));st.px=e.clientX;st.py=e.clientY});
+  r.domElement.style.cursor='grab';
+  return {r,sc,cam,st};
+}
+function texLabel(lines,col){
+  const c=document.createElement('canvas');c.width=512;c.height=256;const g=c.getContext('2d');
+  g.fillStyle=col;g.fillRect(0,0,512,256);
+  g.fillStyle='rgba(28,27,26,.85)';g.font='600 46px IBM Plex Sans, sans-serif';g.fillText(lines[0],34,96);
+  g.fillStyle='rgba(28,27,26,.55)';g.font='30px IBM Plex Mono, monospace';g.fillText(lines[1],34,150);
+  g.strokeStyle='rgba(28,27,26,.12)';g.lineWidth=2;for(let i=0;i<512;i+=32){g.beginPath();g.moveTo(i,200);g.lineTo(i,256);g.stroke()}
+  const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
+}
+if(window.THREE){
+  /* hero: exploded stack */
+  (function(){
+    const stage=document.getElementById('stackStage');const {r,sc,cam,st}=makeScene(stage,[7.5,6.2,9]);
+    const grp=new THREE.Group();grp.position.x=-1.1;sc.add(grp);
+    const layers=[
+      ['Software','OpenBLAS · RVV','#F7EFE8',0xF7EFE8],
+      ['ISA / Arch','riscv-arch-test','#F3E1D8',0xF3E1D8],
+      ['RTL','Sargantana decoder','#E9B9A1',0xE9B9A1],
+      ['Silicon / FPGA','RoCC accelerator','#C85A32',0xC85A32],
+    ];
+    const meshes=[];const labels=[];
+    layers.forEach((L,i)=>{
+      const y=1.5-i*1.0;
+      const mats=[0,1,2,3,4,5].map(k=>new THREE.MeshStandardMaterial({color:L[3],roughness:.75,metalness:.02}));
+      mats[2]=new THREE.MeshStandardMaterial({map:texLabel([L[0],L[1]],L[2]),roughness:.8});
+      const m=new THREE.Mesh(new THREE.BoxGeometry(4,.22,2.6),mats);m.position.y=y;m.userData.base=y;grp.add(m);meshes.push(m);
+      const e=new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x1C1B1A,transparent:true,opacity:.18}));m.add(e);
+      // pins / vias
+      for(let k=0;k<5;k++){const v=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.78,8),new THREE.MeshStandardMaterial({color:0x8E877D}));v.position.set(-1.4+k*.7,-.5,.9);if(i<3)m.add(v)}
+      const lb=document.createElement('div');lb.className='lbl3d';lb.innerHTML=`<b>${L[0]}</b><span>${L[1]}</span>`;stage.appendChild(lb);labels.push(lb);
+    });
+    // packet sprite travelling down
+    const pk=new THREE.Mesh(new THREE.SphereGeometry(.09,16,16),new THREE.MeshStandardMaterial({color:0xC85A32,emissive:0x8a2f10,emissiveIntensity:.4}));grp.add(pk);
+    grp.rotation.y=-.5;
+    const v=new THREE.Vector3();
+    let t0=performance.now();
+    function loop(t){
+      const s=(t-t0)/1000;
+      if(!st.drag&&!reduce)st.ty+=.0022;
+      st.ry+=(st.ty-st.ry)*.08;st.rx+=(st.tx-st.rx)*.08;
+      grp.rotation.y=-.5+st.ry;grp.rotation.x=st.rx;
+      meshes.forEach((m,i)=>m.position.y=m.userData.base+(reduce?0:Math.sin(s*1.1+i*.7)*.06));
+      const p=(s*.35)%1;pk.position.set(1.4-((Math.floor(s*.35))%5)*.7,1.6-p*3.2,.9);
+      r.render(sc,cam);
+      const W=stage.clientWidth,H=stage.clientHeight;
+      meshes.forEach((m,i)=>{v.set(2.05,0,-1.3);m.localToWorld(v);v.project(cam);labels[i].style.left=((v.x+1)/2*W+26)+'px';labels[i].style.top=((1-v.y)/2*H)+'px';labels[i].style.opacity=v.x<.95?1:0});
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  /* research: systolic array wavefront */
+  (function(){
+    const stage=document.getElementById('saStage');const {r,sc,cam,st}=makeScene(stage,[10.5,11,10.5]);
+    const grp=new THREE.Group();sc.add(grp);const N=10,gap=.62;const cells=[];
+    const base=new THREE.Mesh(new THREE.BoxGeometry(N*gap+.5,.12,N*gap+.5),new THREE.MeshStandardMaterial({color:0xEAE5DD,roughness:.9}));base.position.y=-.12;grp.add(base);
+    const geo=new THREE.BoxGeometry(.48,.3,.48);
+    const cA=new THREE.Color(0xF9F8F6),cB=new THREE.Color(0xC85A32),cC=new THREE.Color(0xE9B9A1);
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0xF9F8F6,roughness:.7}));
+      m.position.set((i-(N-1)/2)*gap,.1,(j-(N-1)/2)*gap);m.userData={d:i+j};grp.add(m);cells.push(m);
+      m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x1C1B1A,transparent:true,opacity:.14})));
+    }
+    // input streams (bases) along two edges
+    const bc=[0x6E8A6B,0x4F6C88,0xC79A3E,0xC85A32];
+    for(let k=0;k<N;k++){
+      [[(k-(N-1)/2)*gap,-(N+1)/2*gap],[-(N+1)/2*gap,(k-(N-1)/2)*gap]].forEach(([x,z])=>{const s=new THREE.Mesh(new THREE.BoxGeometry(.3,.12,.3),new THREE.MeshStandardMaterial({color:bc[(k*7+(x>0?1:3))%4]}));s.position.set(x,.02,z);grp.add(s)});
+    }
+    const v=new THREE.Vector3();const t0=performance.now();
+    function loop(t){
+      const s=(t-t0)/1000;
+      if(!st.drag&&!reduce)st.ty+=.0015;
+      st.ry+=(st.ty-st.ry)*.08;st.rx+=(st.tx-st.rx)*.08;grp.rotation.y=st.ry;grp.rotation.x=st.rx;
+      const wave=(s*5)%(2*N+6)-2;
+      cells.forEach(m=>{const k=wave-m.userData.d;let h=.3,c=cA;
+        if(k>=0&&k<1.2){h=.3+(1-Math.abs(k-.6)/.6)*.55;c=cB}else if(k>=1.2){c=cC;h=.36}
+        m.scale.y=m.scale.y+(h/.3-m.scale.y)*.25;m.position.y=.1*m.scale.y;m.material.color.lerp(c,.2)});
+      r.render(sc,cam);requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  })();
+}else{
+  ['stackStage','saStage'].forEach(id=>{const s=document.getElementById(id);s.insertAdjacentHTML('afterbegin','<div style="position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--tx3)">3D view unavailable</div>')});
+}
+</script>
+</body>
+</html>
